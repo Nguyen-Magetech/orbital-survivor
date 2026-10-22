@@ -79,7 +79,8 @@ function main(): void {
   const input = new PointerKeyboardInput();
   input.attach(window);
 
-  const logKey = logKeyFromSearch(search);
+  const logKey = logKeyFromSearch(window.location.search);
+  console.log(logKey)
   if (logKey === null) {
     startGame(input);
     return;
@@ -98,6 +99,7 @@ function main(): void {
       hint: t('logConsentHint'),
     },
     onDecision: (accepted: boolean): void => {
+      console.log('[debug] consent accepted:', accepted);
       if (accepted) {
         armRemoteLogging(logKey);
       } else {
@@ -127,6 +129,8 @@ function launch(input: InputManager): void {
  * the transmission never becomes invisible.
  */
 function armRemoteLogging(logKey: string): void {
+  console.log(location.href);
+  console.log(new URLSearchParams(location.search).has('logkey'));
   const sink = new RemoteLogSink({
     sessionId: log.sessionId,
     transport: httpTransport(logKey),

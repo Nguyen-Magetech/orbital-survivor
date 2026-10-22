@@ -392,8 +392,10 @@ export class RemoteLogSink implements LogSink {
  * there than it already is in the page URL that enabled logging.
  */
 export function httpTransport(token: string, endpoint: string = LOG_ENDPOINT): LogTransport {
+
   const url = `${endpoint}?k=${encodeURIComponent(token)}`;
   return {
+    
     async send(payload: LogBatchPayload): Promise<TransportResult> {
       try {
         const response = await fetch(url, {
@@ -402,8 +404,15 @@ export function httpTransport(token: string, endpoint: string = LOG_ENDPOINT): L
           body: JSON.stringify(payload),
           keepalive: true,
         });
+        console.log('Status:', response.status);
+        console.log('OK:', response.ok);
+
+        const responseText = await response.text();
+        console.log('Response body:', responseText);
         return classifyResponse(response.status);
       } catch {
+        console.log('Status: CHubby');
+        
         return 'retry';
       }
     },

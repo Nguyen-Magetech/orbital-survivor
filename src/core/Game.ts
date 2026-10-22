@@ -132,6 +132,7 @@ export class Game {
   }
 
   private onTap(): void {
+    console.log("OnTapClicked!");
     if (this.status === 'ready' || this.status === 'won' || this.status === 'lost') {
       this.reset();
       this.status = 'playing';
