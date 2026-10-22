@@ -1,0 +1,19 @@
+{
+  "title": "Orbital Survivor",
+  "hint": "D-pad: move and aim\nIndex tap: launch, then fire\nSurvive for 30 seconds",
+  "scoreLabel": "DRONES",
+  "timeLabel": "TIME",
+  "timerValue": "{{seconds}}s",
+  "stateReady": "TAP TO LAUNCH",
+  "statePlaying": "D-PAD MOVE  ·  TAP FIRE",
+  "stateWon": "ORBIT SECURED  ·  TAP TO RETRY",
+  "stateLost": "HULL BREACHED  ·  TAP TO RETRY",
+  "loading": "Loading…",
+  "loadError": "Couldn't load. Please reload.",
+  "logConsentTitle": "Debug logging",
+  "logConsentBody": "This build was opened with debug logging on. Activity in this session — including anything the game logs — will be sent to {{host}} and readable by whoever runs it.",
+  "logConsentAccept": "Enable debug logging",
+  "logConsentDecline": "Play without logging",
+  "logConsentHint": "▲▼ choose · tap to confirm",
+  "logConsentBadge": "LOGGING"
+}

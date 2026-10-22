@@ -1,0 +1,30 @@
+{
+  "_comment": "Orbital Survivor effects are synthesized and use no downloaded audio assets. See docs/audio.md.",
+  "global": { "globalVoiceLimit": 12, "defaultCooldown": 40, "soundsBasePath": "assets/sounds/" },
+  "events": [
+    {
+      "name": "select",
+      "clips": [{ "synth": { "gain": 0.32, "layers": [{ "type": "triangle", "startFreq": 480, "endFreq": 880, "decay": 0.16, "peak": 0.55 }] } }]
+    },
+    {
+      "name": "laser",
+      "cooldown": 90,
+      "voiceLimit": 3,
+      "clips": [{ "synth": { "gain": 0.28, "layers": [{ "type": "square", "startFreq": 980, "endFreq": 360, "decay": 0.11, "peak": 0.45 }] } }]
+    },
+    {
+      "name": "hit",
+      "voiceLimit": 3,
+      "clips": [{ "synth": { "gain": 0.35, "layers": [{ "type": "triangle", "startFreq": 720, "endFreq": 260, "decay": 0.18, "peak": 0.6 }] } }]
+    },
+    {
+      "name": "explosion",
+      "voiceLimit": 1,
+      "clips": [{ "synth": { "gain": 0.45, "layers": [{ "type": "noise", "decay": 0.32, "peak": 0.65 }, { "type": "square", "startFreq": 180, "endFreq": 44, "decay": 0.38, "peak": 0.5 }] } }]
+    },
+    {
+      "name": "finish",
+      "clips": [{ "synth": { "gain": 0.3, "layers": [{ "type": "triangle", "freq": 523, "delay": 0, "decay": 0.16 }, { "type": "triangle", "freq": 659, "delay": 0.12, "decay": 0.18 }, { "type": "triangle", "freq": 784, "delay": 0.24, "decay": 0.28 }] } }]
+    }
+  ]
+}
