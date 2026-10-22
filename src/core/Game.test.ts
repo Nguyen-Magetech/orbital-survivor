@@ -28,7 +28,7 @@ describe('Orbital Survivor', () => {
   });
 
   it('moves by D-pad steps and clamps the ship to the arena', () => {
-    const { renderer, input, game } = setup();
+    const { renderer, input } = setup();
     input.fire('pinchTap', undefined);
     for (let i = 0; i < 20; i++) input.fire('dpadSwipe', 'right');
     expect(playerPosition(renderer).x).toBe(ARENA.playerBound);

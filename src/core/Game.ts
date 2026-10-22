@@ -53,8 +53,8 @@ export class Game {
     renderer.setTransform(this.arenaHandle, new Vector3(0, 0, -0.1));
     this.playerHandle = renderer.addModel('player');
     this.syncPlayer();
-    input.on('dpadSwipe', (direction) => this.onSwipe(direction));
-    input.on('pinchTap', () => this.onTap());
+    this.input.on('dpadSwipe', (direction) => this.onSwipe(direction));
+    this.input.on('pinchTap', () => this.onTap());
   }
 
   public getScore(): number { return this.score; }
