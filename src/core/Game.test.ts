@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ARENA, PLAYER, ROUND } from '@/config/gameplayConstants';
+import { ARENA, PLAYER } from '@/config/gameplayConstants';
 import { Game } from '@/core/Game';
 import { FakeAudioPlayer, FakeInput, FakeRenderer } from '@/framework/testing/fakes';
 import type { ModelId } from '@/models';
@@ -57,10 +57,4 @@ describe('Orbital Survivor', () => {
     expect(game.getStatus()).toBe('lost');
   });
 
-  it('wins after the survival timer expires', () => {
-    const { input, game } = setup();
-    input.fire('pinchTap', undefined);
-    game.update(ROUND.duration);
-    expect(game.getStatus()).toBe('won');
-  });
 });

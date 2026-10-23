@@ -1,6 +1,6 @@
 /** Renderer- and input-agnostic logic for a compact survival arena. */
 import type { SoundId } from '@/audio/soundIds';
-import { ARENA, PLAYER, ROUND } from '@/config/gameplayConstants';
+import { ARENA, PLAYER, PROGRESSION } from '@/config/gameplayConstants';
 import type { AudioPlayer } from '@/framework/audio/AudioPlayer';
 import type { DpadDirection, InputManager } from '@/framework/input/InputManager';
 import { Vector3, clamp } from '@/framework/math/Vector3';
@@ -27,9 +27,10 @@ interface MovingThing {
   vx: number;
   vy: number;
   age: number;
+  health?: number;
 }
 
-type GameStatus = 'ready' | 'playing' | 'won' | 'lost';
+type GameStatus = 'ready' | 'playing' | 'lost';
 
 export class Game {
   private readonly arenaHandle: RenderHandle;
@@ -40,9 +41,12 @@ export class Game {
   private readonly bolts: MovingThing[] = [];
   private status: GameStatus = 'ready';
   private score = 0;
-  private elapsed = 0;
   private spawnElapsed = 0;
   private spawnIndex = 0;
+  private wave = 0;
+  private remainingToSpawn = 0;
+  private lastSwipe: DpadDirection | null = null;
+  private swipeWindowLeft = 0;
 
   public constructor(
     private readonly renderer: Renderer<ModelId>,
@@ -59,17 +63,21 @@ export class Game {
 
   public getScore(): number { return this.score; }
   public getStatus(): GameStatus { return this.status; }
-  public getSecondsLeft(): number { return Math.max(0, Math.ceil(ROUND.duration - this.elapsed)); }
+  public getWave(): number { return this.wave; }
 
   public update(dt: number): void {
     if (this.status !== 'playing') return;
     const step = Math.max(0, dt);
-    this.elapsed += step;
     this.spawnElapsed += step;
+    if (this.lastSwipe && this.swipeWindowLeft > 0) {
+      this.swipeWindowLeft = Math.max(0, this.swipeWindowLeft - step);
+      if (this.swipeWindowLeft === 0) this.lastSwipe = null;
+    }
 
-    if (this.spawnElapsed >= ARENA.spawnInterval) {
-      this.spawnElapsed -= ARENA.spawnInterval;
+    if (this.remainingToSpawn > 0 && this.spawnElapsed >= this.spawnInterval()) {
+      this.spawnElapsed = 0;
       this.spawnEnemy();
+      this.remainingToSpawn--;
     }
 
     for (let i = this.bolts.length - 1; i >= 0; i--) {
@@ -87,10 +95,14 @@ export class Game {
         }
       }
       if (hit >= 0) {
-        this.renderer.remove(bolt.handle);
         this.bolts.splice(i, 1);
-        this.removeEnemy(hit);
-        this.score += 1;
+        this.renderer.remove(bolt.handle);
+        const enemy = this.enemies[hit];
+        enemy.health = (enemy.health ?? 1) - 1;
+        if (enemy.health <= 0) {
+          this.removeEnemy(hit);
+          this.score += 1;
+        }
         this.audio.play('hit');
       } else if (bolt.age >= ARENA.boltLifetime) {
         this.renderer.remove(bolt.handle);
@@ -113,9 +125,8 @@ export class Game {
       }
     }
 
-    if (this.status === 'playing' && this.elapsed >= ROUND.duration) {
-      this.status = 'won';
-      this.audio.play('finish');
+    if (this.status === 'playing' && this.remainingToSpawn === 0 && this.enemies.length === 0) {
+      this.startWave(this.wave + 1);
     }
   }
 
@@ -124,18 +135,28 @@ export class Game {
   private onSwipe(direction: DpadDirection): void {
     if (this.status !== 'playing') return;
     const vector = DIRECTIONS[direction];
+    const isDoubleSwipe = this.lastSwipe === direction && this.swipeWindowLeft > 0;
+    if (isDoubleSwipe) {
+      this.player.x = vector.x * ARENA.playerBound;
+      this.player.y = vector.y * ARENA.playerBound;
+      this.lastSwipe = null;
+      this.swipeWindowLeft = 0;
+    } else {
+      this.player.x = clamp(this.player.x + vector.x * PLAYER.stepSize, -ARENA.playerBound, ARENA.playerBound);
+      this.player.y = clamp(this.player.y + vector.y * PLAYER.stepSize, -ARENA.playerBound, ARENA.playerBound);
+      this.lastSwipe = direction;
+      this.swipeWindowLeft = PROGRESSION.doubleSwipeWindow;
+    }
     this.facing.x = vector.x;
     this.facing.y = vector.y;
-    this.player.x = clamp(this.player.x + vector.x * PLAYER.stepSize, -ARENA.playerBound, ARENA.playerBound);
-    this.player.y = clamp(this.player.y + vector.y * PLAYER.stepSize, -ARENA.playerBound, ARENA.playerBound);
     this.syncPlayer();
   }
 
   private onTap(): void {
-    console.log("OnTapClicked!");
-    if (this.status === 'ready' || this.status === 'won' || this.status === 'lost') {
+    if (this.status === 'ready' || this.status === 'lost') {
       this.reset();
       this.status = 'playing';
+      this.startWave(1);
       this.audio.play('select');
       return;
     }
@@ -151,9 +172,32 @@ export class Game {
   }
 
   private spawnEnemy(): void {
+    const isBossWave = this.wave % PROGRESSION.bossEveryWaves === 0;
     const point = SPAWN_POINTS[this.spawnIndex % SPAWN_POINTS.length];
     this.spawnIndex++;
-    this.enemies.push({ handle: this.renderer.addModel('enemy'), x: point.x, y: point.y, vx: 0, vy: 0, age: 0 });
+    const handle = this.renderer.addModel(isBossWave ? 'boss' : 'enemy');
+    const bossTier = this.wave / PROGRESSION.bossEveryWaves - 1;
+    const health = isBossWave
+      ? PROGRESSION.bossHealth + bossTier * PROGRESSION.bossHealthPerTier
+      : 1;
+    if (isBossWave) this.renderer.setScale?.(handle, PROGRESSION.bossScale);
+    this.enemies.push({ handle, x: point.x, y: point.y, vx: 0, vy: 0, age: 0, health });
+  }
+
+  private startWave(wave: number): void {
+    this.wave = wave;
+    const isBossWave = wave % PROGRESSION.bossEveryWaves === 0;
+    this.remainingToSpawn = isBossWave
+      ? 1
+      : PROGRESSION.firstWaveEnemies + (wave - 1) * PROGRESSION.enemiesAddedPerWave;
+    this.spawnElapsed = 0;
+  }
+
+  private spawnInterval(): number {
+    return Math.max(
+      PROGRESSION.fastestSpawnInterval,
+      ARENA.spawnInterval / (1 + (this.wave - 1) * PROGRESSION.spawnAccelerationPerWave),
+    );
   }
 
   private removeEnemy(index: number): void {
@@ -171,9 +215,12 @@ export class Game {
     this.facing.x = 0;
     this.facing.y = 1;
     this.score = 0;
-    this.elapsed = 0;
     this.spawnElapsed = 0;
     this.spawnIndex = 0;
+    this.wave = 0;
+    this.remainingToSpawn = 0;
+    this.lastSwipe = null;
+    this.swipeWindowLeft = 0;
     this.syncPlayer();
   }
 

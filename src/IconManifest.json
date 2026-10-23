@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "name": "Chubby",
+  "description": "My Meta Wearables web app.",
+  "appearance": {
+    "theme_color": "#00BFFF",
+    "icon": {
+      "src": "./Icons/just_troll.png",
+      "type": "monochrome"
+    },
+    "icon_background": {
+        "colors": ["#001122", "#112233", "#223344", "#334455"],
+        "stops": [0.22, 0.44, 0.7, 1]
+    }
+  }
+}

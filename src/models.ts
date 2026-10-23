@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { COLORS } from '@/config/gameplayConstants';
 import type { ModelCatalog, ModelSpec } from '@/framework/render/ThreeRenderer';
 
-export type ModelId = 'arena' | 'player' | 'enemy' | 'bolt';
+export type ModelId = 'arena' | 'player' | 'enemy' | 'boss' | 'bolt';
 
 const arena: ModelSpec = {
   defaultColor: COLORS.arena,
@@ -57,4 +57,14 @@ const bolt: ModelSpec = {
   },
 };
 
-export const MODELS: ModelCatalog<ModelId> = { arena, player, enemy, bolt };
+const boss: ModelSpec = {
+  defaultColor: COLORS.boss,
+  build(color: number): THREE.Object3D {
+    const geometry = new THREE.IcosahedronGeometry(0.42, 1);
+    const edges = new THREE.EdgesGeometry(geometry);
+    geometry.dispose();
+    return new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color }));
+  },
+};
+
+export const MODELS: ModelCatalog<ModelId> = { arena, player, enemy, boss, bolt };

@@ -12,7 +12,7 @@ import { t } from '@/i18n';
 
 export class Hud {
   private readonly scoreEl: HTMLElement;
-  private readonly timerEl: HTMLElement;
+  private readonly waveEl: HTMLElement;
   private readonly statusEl: HTMLElement;
   private readonly titleScreen: HTMLElement | null;
 
@@ -22,10 +22,10 @@ export class Hud {
       throw new Error('HUD: #score element not found.');
     }
     this.scoreEl = score;
-    const timer = document.querySelector<HTMLElement>('#timer');
+    const wave = document.querySelector<HTMLElement>('#wave');
     const status = document.querySelector<HTMLElement>('#status');
-    if (!timer || !status) throw new Error('HUD: #timer or #status element not found.');
-    this.timerEl = timer;
+    if (!wave || !status) throw new Error('HUD: #wave or #status element not found.');
+    this.waveEl = wave;
     this.statusEl = status;
     this.titleScreen = document.querySelector<HTMLElement>('#title-screen');
   }
@@ -38,11 +38,10 @@ export class Hud {
   /** Reflect current game state into the DOM. Call once per frame. */
   public update(): void {
     this.scoreEl.textContent = String(this.game.getScore());
-    this.timerEl.textContent = t('timerValue', { seconds: this.game.getSecondsLeft() });
+    this.waveEl.textContent = String(this.game.getWave());
     const statusKey = {
       ready: 'stateReady',
       playing: 'statePlaying',
-      won: 'stateWon',
       lost: 'stateLost',
     }[this.game.getStatus()];
     this.statusEl.textContent = t(statusKey);

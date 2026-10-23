@@ -36,6 +36,7 @@ export const COLORS = {
   arena: 0x14506b,
   player: 0x4deaff,
   enemy: 0xff4f7d,
+  boss: 0xff9c42,
   bolt: 0xfff27a,
 };
 
@@ -108,7 +109,21 @@ export const ARENA = {
   playerHitRadius: 0.42,
 };
 
-/** A short first-session survival run. */
-export const ROUND = {
-  duration: 30,
+/** Endless wave progression and movement abilities. */
+export const PROGRESSION = {
+  /** Number of ordinary drones in wave one; each later wave adds one. */
+  firstWaveEnemies: 3,
+  /** Boss appears on each multiple of this wave number. */
+  bossEveryWaves: 5,
+  /** How long the second matching D-pad swipe can follow the first. */
+  doubleSwipeWindow: 0.45,
+  /** Boss durability and size. */
+  bossHealth: 8,
+  bossHealthPerTier: 2,
+  bossScale: 2.2,
+  /** Wave tuning. */
+  enemiesAddedPerWave: 1,
+  spawnAccelerationPerWave: 0.08,
+  /** Spawn pacing accelerates gradually with each wave. */
+  fastestSpawnInterval: 0.55,
 };

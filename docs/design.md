@@ -2,19 +2,20 @@
 
 ## Concept
 
-A compact 3D arena survival game for the Meta Ray-Ban Display. Move a bright wireframe ship around a neon orbital grid, turn to face incoming drones, and fire energy bolts until the 30-second rescue window closes.
+A compact 3D arena survival game for the Meta Ray-Ban Display. Move a bright wireframe ship around a neon orbital grid, turn to face incoming drones, and fire energy bolts through endless escalating waves and recurring boss fights.
 
 ## Player goal
 
-Destroy drones for score and survive for 30 seconds to secure the orbit. A drone touching the ship ends the run. A tap after the result starts a fresh run.
+Destroy drones for score and keep advancing through endless waves. A drone touching the ship ends the run. A tap after the result starts a fresh run.
 
 ## Core loop
 
-Read the bright drone approach, swipe the D-pad to reposition and face it, tap to fire along that facing, then use the hit feedback and drone count to decide where to move next.
+Read the bright drone approach, swipe the D-pad to reposition and face it, tap to fire along that facing, and double-swipe one direction quickly to teleport to that side of the arena. Clear each wave to advance. Every fifth wave replaces the regular group with a larger, multi-hit boss; later bosses become tougher and regular waves grow in size.
 
 ## Controls
 
 - D-pad swipe / arrow key: move one step and face that direction.
+- Two consecutive swipes in the same direction within a short window: teleport to the arena edge in that direction.
 - Index tap / Enter: launch from the title; fire while playing; restart after a result.
 - Index drag: unused. The game stays tap-only.
 
@@ -28,16 +29,16 @@ Synthesized one-shot effects only: launch, firing, drone hit, collision, and vic
 
 ## Persistence and progression
 
-English-only, one fixed 30-second run, with no saved score or settings. This first slice has a deterministic cardinal spawn sequence and no difficulty ramp.
+English-only endless progression, with no saved score or settings. Waves grow in size and spawn pace; every fifth wave is a boss wave. Boss health increases on later boss waves. Spawn points use a deterministic cardinal sequence.
 
 ## Scope / milestones
 
-1. **Playable slice (built):** title, D-pad movement and facing, tap fire, incoming drones, hit scoring, collision loss, and timed survival win.
+1. **Endless arena (built):** title, D-pad movement and facing, double-swipe teleport, tap fire, escalating waves, recurring multi-hit bosses, hit scoring, and collision loss.
 2. Later: tune difficulty and add richer enemy patterns after a device playtest.
 
 ## Out of scope
 
-Persistent records, waves, power-ups, drag aiming, external art/audio, background music, and online features.
+Persistent records, power-ups, drag aiming, external art/audio, background music, and online features.
 
 ## Target and verification
 
